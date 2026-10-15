@@ -1,0 +1,9 @@
+{
+  "name": "structx-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first RCC learning and calculation workspace",
+  "scripts": { "start": "node server/index.js", "test": "node --test" },
+  "engines": { "node": ">=20" }
+}

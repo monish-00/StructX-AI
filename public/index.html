@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f9"><meta name="description" content="StructX AI — an RCC learning and calculation workspace">
+  <title>StructX AI — RCC Design Assistant</title><link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="StructX AI home"><span class="brand-mark"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M6 28V8h24v20H6Zm5-15h14M11 18h14M11 23h9"/><path d="M3 32h30"/></svg></span><span><b>StructX <i>AI</i></b><small>RCC DESIGN STUDIO</small></span></a>
+      <button class="new-chat" id="newChat"><span>＋</span> New conversation <kbd>⌘ K</kbd></button>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="main-nav"><button class="nav-item active" data-page="assistant"><span class="nav-icon">◉</span> RCC assistant</button><button class="nav-item" data-page="syllabus"><span class="nav-icon">▤</span> Course syllabus</button><button class="nav-item" data-page="gate"><span class="nav-icon">⌁</span> GATE practice <span class="soon">BETA</span></button><button class="nav-item" data-page="references"><span class="nav-icon">⌕</span> Formula library</button></nav>
+      <div class="history-heading"><span class="sidebar-label">RECENT CHATS</span><button id="historySearch" class="icon-button" aria-label="Search conversation history" title="Search history">⌕</button></div>
+      <input id="historyQuery" class="history-search hidden" placeholder="Search conversations…" aria-label="Search conversations">
+      <div class="history-list" id="historyList"></div>
+      <div class="sidebar-bottom"><div class="system-card"><span class="status-dot"></span><div><b>Local calculation engine</b><small id="aiStatus">AI provider not configured</small></div><button id="statusInfo" class="icon-button" aria-label="About system status">ⓘ</button></div><button class="profile"><span class="avatar">S</span><span><b>Study workspace</b><small>Local session</small></span><span class="profile-menu">···</span></button></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar"><button id="mobileMenu" class="icon-button mobile-menu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><span id="crumbTop">Workspace</span><span>/</span><b id="crumbCurrent">RCC assistant</b></div><div class="top-actions"><span class="mode-label">RESPONSE MODE</span><select id="modeSelect" aria-label="Response mode"><option value="beginner">Beginner</option><option value="examination">Examination</option><option value="gate">GATE prep</option><option value="professional">Professional</option></select><span class="top-divider"></span><button id="themeToggle" class="icon-button theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">☾</button><button id="settingsBtn" class="icon-button" aria-label="Settings" title="Settings">⚙</button></div></header>
+      <section id="welcome" class="welcome-view">
+        <div class="welcome-content"><div class="eyebrow"><span class="sparkle">✳</span> YOUR RCC ENGINEERING WORKSPACE</div><h1>Design with clarity.<br><span>Learn with confidence.</span></h1><p class="welcome-copy">A focused companion for reinforced concrete concepts, calculations, and your 22CV52 course.</p>
+          <div class="course-strip"><div class="course-symbol">▦</div><div><b>Design of RCC Structures <span>22CV52</span></b><small>5 units <i>·</i> Beams, slabs, columns & foundations</small></div><button id="openSyllabus" class="text-link">Explore syllabus <span>→</span></button></div>
+          <div class="prompt-heading"><span>START WITH A QUESTION</span><span class="heading-rule"></span><small>Choose a prompt or write your own</small></div>
+          <div class="suggestion-grid">
+            <button class="suggestion" data-prompt="Explain the difference between working stress and limit state methods."><span class="suggestion-icon blue">◌</span><span><b>Understand the fundamentals</b><small>Working stress vs. limit state methods</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Beam flexure b=300 d=500 fck=20 fy=415 Mu=120"><span class="suggestion-icon amber">⌁</span><span><b>Calculate beam flexure</b><small>Enter a section and design moment</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="Explain one-way and two-way slab design concepts."><span class="suggestion-icon green">▤</span><span><b>Explore slab design</b><small>One-way & two-way slab concepts</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion" data-prompt="GATE RCC: Explain how to approach a flexural strength problem."><span class="suggestion-icon violet">⌖</span><span><b>Prepare for GATE Civil</b><small>Practice RCC concepts and methods</small></span><span class="suggestion-arrow">↗</span></button>
+          </div>
+        </div>
+      </section>
+      <section id="chatView" class="chat-view hidden"><div id="messages" class="messages"></div></section>
+      <section id="syllabusView" class="syllabus-view hidden"><div class="page-heading"><div class="eyebrow">22CV52 · 3 CREDITS</div><h1>Design of <span>RCC Structures</span></h1><p>Explore your course units and start a topic-focused conversation.</p></div><div id="unitGrid" class="unit-grid"></div></section>
+      <section id="infoView" class="syllabus-view hidden"><div id="infoContent" class="page-heading"></div></section>
+      <div class="composer-wrap"><div id="attachmentInfo" class="attachment-info hidden"></div><div class="composer"><div class="composer-tools"><label class="tool-button" title="Attach notes or a reference file">＋<input type="file" id="fileInput" accept=".pdf,.txt,.md,.png,.jpg,.jpeg" hidden></label><span class="tool-divider"></span><button id="unitPicker" class="unit-picker">▦ <span>All RCC topics</span> <span class="chevron">⌄</span></button><span class="tool-spacer"></span><span class="composer-hint">Enter to send <kbd>↵</kbd></span></div><textarea id="question" rows="1" placeholder="Ask an RCC question or enter a calculation…" aria-label="Your RCC question"></textarea><div class="composer-footer"><span class="composer-note"><span class="tiny-shield">◇</span> Calculations run locally · Verify designs before use</span><button id="sendBtn" class="send-button" aria-label="Send question">↑</button></div></div><div class="footnote">StructX AI can make mistakes. Verify engineering decisions against applicable standards and a qualified engineer.</div></div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </main>
+  </div>
+  <dialog id="settingsDialog"><form method="dialog" class="dialog-panel"><button class="dialog-close" aria-label="Close">×</button><div class="eyebrow">PREFERENCES</div><h2>Workspace settings</h2><p>StructX AI stores your conversations in this project folder on this device.</p><div class="setting-row"><div><b>Color theme</b><small>Switch between light and dark appearance.</small></div><button type="button" id="dialogTheme" class="secondary-button">Toggle theme</button></div><div class="setting-row"><div><b>AI provider</b><small id="providerSetting">No provider configured. Local assistant and beam flexure calculator are available.</small></div></div><div class="setting-row"><div><b>Conversation data</b><small>Delete all locally saved conversations.</small></div><button type="button" id="clearHistory" class="danger-button">Clear history</button></div><button class="primary-button dialog-done">Done</button></form></dialog>
+  <dialog id="unitDialog"><form method="dialog" class="dialog-panel"><button class="dialog-close" aria-label="Close">×</button><div class="eyebrow">FOCUS YOUR QUESTION</div><h2>Choose a course topic</h2><div id="unitChoices" class="unit-choices"></div></form></dialog>
+  <script type="module" src="/app.js"></script>
+</body></html>
