@@ -13,7 +13,7 @@ const dbFile = path.join(dataDir, 'conversations.json');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = () => fs.existsSync(dbFile) ? JSON.parse(fs.readFileSync(dbFile, 'utf8')) : [];
 const save = items => fs.writeFileSync(dbFile, JSON.stringify(items, null, 2));
-const mime = { '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml' };
+const mime = { '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json; charset=utf-8' };
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const json = (status, obj) => { res.writeHead(status, {'content-type':'application/json; charset=utf-8'}); res.end(JSON.stringify(obj)); };

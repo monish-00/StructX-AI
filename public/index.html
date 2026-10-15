@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4f6f9"><meta name="description" content="StructX AI — an RCC learning and calculation workspace">
-  <title>StructX AI — RCC Design Assistant</title><link rel="stylesheet" href="/styles.css">
+  <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="StructX AI"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>StructX AI — RCC Design Assistant</title><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <div class="app-shell">
@@ -18,7 +19,7 @@
       <div class="sidebar-bottom"><div class="system-card"><span class="status-dot"></span><div><b>Local calculation engine</b><small id="aiStatus">AI provider not configured</small></div><button id="statusInfo" class="icon-button" aria-label="About system status">ⓘ</button></div><button class="profile"><span class="avatar">S</span><span><b>Study workspace</b><small>Local session</small></span><span class="profile-menu">···</span></button></div>
     </aside>
     <main class="main-area">
-      <header class="topbar"><button id="mobileMenu" class="icon-button mobile-menu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><span id="crumbTop">Workspace</span><span>/</span><b id="crumbCurrent">RCC assistant</b></div><div class="top-actions"><span class="mode-label">RESPONSE MODE</span><select id="modeSelect" aria-label="Response mode"><option value="beginner">Beginner</option><option value="examination">Examination</option><option value="gate">GATE prep</option><option value="professional">Professional</option></select><span class="top-divider"></span><button id="themeToggle" class="icon-button theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">☾</button><button id="settingsBtn" class="icon-button" aria-label="Settings" title="Settings">⚙</button></div></header>
+      <header class="topbar"><button id="mobileMenu" class="icon-button mobile-menu" aria-label="Open navigation">☰</button><div class="breadcrumbs"><span id="crumbTop">Workspace</span><span>/</span><b id="crumbCurrent">RCC assistant</b></div><div class="top-actions"><span class="mode-label">RESPONSE MODE</span><select id="modeSelect" aria-label="Response mode"><option value="beginner">Beginner</option><option value="examination">Examination</option><option value="gate">GATE prep</option><option value="professional">Professional</option></select><button id="installBtn" class="install-button" aria-label="Install StructX AI">⇩ <span>Install</span></button><span class="top-divider"></span><button id="themeToggle" class="icon-button theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">☾</button><button id="settingsBtn" class="icon-button" aria-label="Settings" title="Settings">⚙</button></div></header>
       <section id="welcome" class="welcome-view">
         <div class="welcome-content"><div class="eyebrow"><span class="sparkle">✳</span> YOUR RCC ENGINEERING WORKSPACE</div><h1>Design with clarity.<br><span>Learn with confidence.</span></h1><p class="welcome-copy">A focused companion for reinforced concrete concepts, calculations, and your 22CV52 course.</p>
           <div class="course-strip"><div class="course-symbol">▦</div><div><b>Design of RCC Structures <span>22CV52</span></b><small>5 units <i>·</i> Beams, slabs, columns & foundations</small></div><button id="openSyllabus" class="text-link">Explore syllabus <span>→</span></button></div>

@@ -12,6 +12,10 @@ npm start
 
 Open <http://127.0.0.1:4173>. Conversations are stored in `data/conversations.json` on this machine. Do not put confidential material in that local history.
 
+## Install on a phone
+
+StructX AI is an installable Progressive Web App (PWA); it uses no paid app framework or app-store account. Deploy it over HTTPS first. On Android, open the site in Chrome and use **Install app** (or the browser menu). On iPhone/iPad, open it in Safari, tap **Share**, then **Add to Home Screen**. The PWA caches the app shell, but chat and calculations still need an internet connection to the server. The normal responsive website also works on phones without installing it.
+
 ### Enable model-backed answers
 
 The app does not include an AI key. Copy `.env.example` to `.env` and set `AI_API_KEY`, `AI_MODEL`, and `AI_BASE_URL` to values from your chosen OpenAI-compatible provider. `AI_BASE_URL` is the provider API root (for example `https://api.openai.com/v1`); the server appends `/chat/completions`. Restart the server after changing `.env`. The key stays in the Node backend and is never sent to browser JavaScript. The provider must allow network access from this machine. Without these settings the app uses its limited offline answer set and explains that general model chat is unavailable.
@@ -29,6 +33,7 @@ npm test
 ## Implemented
 
 - Responsive light/dark interface with home, chat, syllabus, GATE status, formula library, topic focus, and settings views.
+- Installable PWA manifest, custom app icon, service worker shell cache, offline page fallback, and an install prompt/help control.
 - Optional server-side OpenAI-compatible chat-completions adapter with prior conversation context, bounded message sizes, request timeout, and honest provider error handling.
 - Curated offline explanations for several core RCC concepts.
 - Conversation creation, local persistence, history search, saved status display, clear history, selectable response mode, copy/export, text/Markdown notes, and issue-report copying.
