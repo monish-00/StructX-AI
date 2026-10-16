@@ -24,7 +24,8 @@ export function modelConfigured() {
 export function modelStatus() {
   if (!modelConfigured()) return { configured:false, aiConfigured:false };
   const provider = process.env.AI_PROVIDER === 'ollama' ? 'Ollama'
-    : /generativelanguage\.googleapis\.com/i.test(process.env.AI_BASE_URL) ? 'Gemini' : process.env.AI_PROVIDER;
+    : /generativelanguage\.googleapis\.com/i.test(process.env.AI_BASE_URL) ? 'Gemini'
+    : /api\.groq\.com/i.test(process.env.AI_BASE_URL) ? 'Groq' : process.env.AI_PROVIDER;
   return { configured:true, aiConfigured:true, provider, model:process.env.AI_MODEL };
 }
 
@@ -47,7 +48,7 @@ export async function answerWithModel({ text, mode, history }) {
     signal: AbortSignal.timeout(45000)
   });
   if (!response.ok) {
-    const hint = response.status === 429 ? 'The model server is rate limiting requests. Try again later.'
+    const hint = response.status === 429 ? 'The provider free-tier limit may have been reached. Try again later.'
       : response.status === 401 || response.status === 403 ? 'The model server rejected its credentials. Check the server configuration.'
       : `The provider returned HTTP ${response.status}. Check its model and endpoint configuration.`;
     throw new Error(hint);

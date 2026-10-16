@@ -12,3 +12,11 @@ services:
         value: production
       - key: HOSTED_MODE
         value: "true"
+      - key: AI_PROVIDER
+        value: openai-compatible
+      - key: AI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: AI_MODEL
+        value: openai/gpt-oss-20b
+      - key: AI_API_KEY
+        sync: false

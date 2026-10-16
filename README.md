@@ -1,6 +1,6 @@
 # StructX AI
 
-StructX AI is a mobile-friendly RCC learning assistant based on the supplied 22CV52 syllabus. It uses a locally installed Ollama model for contextual general chat and keeps its supported beam flexure calculation deterministic. A curated offline response set remains available if Ollama is stopped.
+StructX AI is a mobile-friendly RCC learning assistant based on the supplied 22CV52 syllabus. It supports a locally installed Ollama model for private, contextual chat and a Groq free-tier model for hosted chat. Its supported beam flexure calculation stays deterministic. A curated offline response set remains available when no model is configured.
 
 ## Run locally
 
@@ -20,9 +20,11 @@ StructX AI is an installable Progressive Web App (PWA); it uses no paid app fram
 
 Model-backed chat uses Ollama's local OpenAI-compatible API, so it has no per-token API charge and does not require a key. Copy `.env.example` to `.env`; set `AI_MODEL` to a model installed in your Ollama instance, and keep `AI_BASE_URL` at `http://127.0.0.1:11434/v1` for local use. The keyless adapter sends regular chat-completion requests to Ollama. The model must be downloaded separately through Ollama if it is not already installed. Model answers are not web-grounded and do not provide verified code citations. The deterministic local beam calculation is not replaced by model-generated arithmetic.
 
-## Render deployment
+## Free hosted AI and Render deployment
 
-`render.yaml` defines a free Singapore web service for the PWA shell, but it does not include Ollama. Ollama runs on your own computer and Render cannot reach that local model server. To chat with the model from a phone at no API cost, run this Node app and Ollama on the same computer, then open that computer's LAN address from a phone on the same Wi-Fi. This does not make the model publicly reachable. Public Render hosting remains available for the website, but its chat uses only the curated offline answers until a separate reachable model provider is configured. Render's free service sleeps after inactivity and does not preserve server files. In `HOSTED_MODE`, each visitor's conversation history stays in that visitor's browser `localStorage` and does not sync across devices.
+`render.yaml` defines a free Singapore web service for the PWA and configures Groq's OpenAI-compatible chat endpoint with `openai/gpt-oss-20b`. Groq offers a free API tier with model-specific rate and daily usage caps; availability and limits can change. Create a Groq account and API key, then add it in the Render service's Environment settings as `AI_API_KEY`. The key must stay server-side and must never be committed to Git or embedded in the browser app. Render's Blueprint setup may also prompt for this secret. Without the secret, the site still opens, but model-backed chat is not configured.
+
+For local private use, `.env.example` remains configured for Ollama at `http://127.0.0.1:11434/v1`; your computer must have the model installed and Ollama running. Render cannot reach Ollama running on your computer. The Groq cloud service receives prompts sent from the hosted app, subject to Groq's terms and free-tier limits. Model answers are not web-grounded and are not verified engineering advice; the deterministic beam calculator remains separate. Render's free service can sleep after inactivity and does not preserve server files. In `HOSTED_MODE`, each visitor's conversation history stays in that visitor's browser `localStorage` and does not sync across devices.
 
 Run the automated checks with:
 
@@ -34,7 +36,7 @@ npm test
 
 - Responsive light/dark interface with home, chat, syllabus, GATE status, formula library, topic focus, and settings views.
 - Installable PWA manifest, custom app icon, service worker shell cache, offline page fallback, and an install prompt/help control.
-- Server-side Ollama chat with prior conversation context; when running, the local model handles ordinary chat rather than returning repetitive canned topics. The supported beam flexure calculator and its missing-input prompts stay deterministic.
+- Server-side Ollama or Groq chat with prior conversation context; when configured, the model handles ordinary chat rather than returning repetitive canned topics. The supported beam flexure calculator and its missing-input prompts stay deterministic.
 - Curated offline explanations for several core RCC concepts.
 - Conversation creation, local persistence, history search, saved status display, clear history, selectable response mode, copy/export, text/Markdown notes, and issue-report copying.
 - 22CV52 Units 1–5 and the supplied topic outline.
@@ -45,7 +47,7 @@ npm test
 
 ## Not implemented yet
 
-- Public cloud Ollama hosting, local-network HTTPS setup, authentication, and remote access to the user's computer are not included. Render-hosted chat cannot reach a model running on the user's PC.
+- User accounts and authentication are not included. Hosted AI uses shared provider quotas, so public traffic can consume the free-tier allowance.
 - Full section analysis, doubly reinforced/T-beams, loads, shear, deflection, crack control, development length, slab, column, footing, staircase, 2BHK design, or construction detailing.
 - PDF extraction, OCR, document indexing/RAG, table/equation extraction, or image interpretation. PDF/image selection only reports that the file was selected; its contents are not sent or analyzed. Text/Markdown uploads may be included in a prompt.
 - Licensed/verified Indian Standard documents, current-edition checks, clause/table/page citations, or a verified GATE question bank. The app explicitly flags these as unavailable.
