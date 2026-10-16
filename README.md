@@ -1,16 +1,16 @@
 # StructX AI
 
-StructX AI is a mobile-installable RCC learning assistant based on the supplied 22CV52 syllabus. With its server-side Gemini connection configured, it uses conversation context to answer general questions; its supported beam flexure calculation remains deterministic. A curated offline response set remains available when no model key is configured.
+StructX AI is a mobile-friendly RCC learning assistant based on the supplied 22CV52 syllabus. It uses a locally installed Ollama model for contextual general chat and keeps its supported beam flexure calculation deterministic. A curated offline response set remains available if Ollama is stopped.
 
 ## Run locally
 
-Requires Node.js 20 or newer; no package installation is needed.
+Requires Node.js 20 or newer and Ollama installed on the computer; no Node package installation is needed. This project is configured for the already-installed `llama3:8b-instruct-q4_0` model on this computer.
 
 ```powershell
 npm start
 ```
 
-Open <http://127.0.0.1:4173>. Conversations are stored in `data/conversations.json` on this machine. Do not put confidential material in that local history.
+Open <http://127.0.0.1:4173>. Conversations are stored in `data/conversations.json` on this machine. Do not put confidential material in that local history. Ollama runs locally at `http://127.0.0.1:11434`; no cloud API key is needed and prompts stay on this computer.
 
 ## Install on a phone
 
@@ -18,11 +18,11 @@ StructX AI is an installable Progressive Web App (PWA); it uses no paid app fram
 
 ### Enable model-backed answers
 
-The app is wired to Google's OpenAI-compatible Gemini API. To run model-backed chat locally, copy `.env.example` to `.env`, create a key in [Google AI Studio](https://aistudio.google.com/app/apikey), set `AI_API_KEY`, then restart the server. The default model is `gemini-3.8-flash`; the URL and model can be changed in `.env`. Keep the key on the server: it is never sent to browser JavaScript and must not be committed. Google's Gemini API lists a free tier for Gemini 3.8 Flash, with quotas and availability subject to Google's account and rate limits. Free-tier prompts may be used to improve Google's products. The chatbot does not use search grounding, so it does not provide live web research or verified code citations. The deterministic local beam calculation is not replaced by model-generated arithmetic.
+Model-backed chat uses Ollama's local OpenAI-compatible API, so it has no per-token API charge and does not require a key. Copy `.env.example` to `.env`; set `AI_MODEL` to a model installed in your Ollama instance, and keep `AI_BASE_URL` at `http://127.0.0.1:11434/v1` for local use. The keyless adapter sends regular chat-completion requests to Ollama. The model must be downloaded separately through Ollama if it is not already installed. Model answers are not web-grounded and do not provide verified code citations. The deterministic local beam calculation is not replaced by model-generated arithmetic.
 
 ## Render deployment
 
-`render.yaml` defines a free Singapore web service with Gemini configuration and an unset secret key. During initial Blueprint creation, Render asks for `AI_API_KEY`; for an already-created service, add that variable in its Environment settings. Never put the secret in the Blueprint YAML or GitHub. The app uses Gemini 3.8 Flash's free tier (quota limits apply); no paid-tier model or search-grounding feature is enabled. Render's free service sleeps after inactivity and does not preserve server files. In `HOSTED_MODE`, each visitor's conversation history stays in that visitor's browser `localStorage` and does not sync across devices. The public hosted chat uses the server-side key, so keep that key on the free-tier project and rotate/remove it if abused.
+`render.yaml` defines a free Singapore web service for the PWA shell, but it does not include Ollama. Ollama runs on your own computer and Render cannot reach that local model server. To chat with the model from a phone at no API cost, run this Node app and Ollama on the same computer, then open that computer's LAN address from a phone on the same Wi-Fi. This does not make the model publicly reachable. Public Render hosting remains available for the website, but its chat uses only the curated offline answers until a separate reachable model provider is configured. Render's free service sleeps after inactivity and does not preserve server files. In `HOSTED_MODE`, each visitor's conversation history stays in that visitor's browser `localStorage` and does not sync across devices.
 
 Run the automated checks with:
 
@@ -34,7 +34,7 @@ npm test
 
 - Responsive light/dark interface with home, chat, syllabus, GATE status, formula library, topic focus, and settings views.
 - Installable PWA manifest, custom app icon, service worker shell cache, offline page fallback, and an install prompt/help control.
-- Server-side Gemini 3.8 Flash chat with prior conversation context; when configured, the model handles ordinary chat rather than returning repetitive canned topics. The supported beam flexure calculator and its missing-input prompts stay deterministic.
+- Server-side Ollama chat with prior conversation context; when running, the local model handles ordinary chat rather than returning repetitive canned topics. The supported beam flexure calculator and its missing-input prompts stay deterministic.
 - Curated offline explanations for several core RCC concepts.
 - Conversation creation, local persistence, history search, saved status display, clear history, selectable response mode, copy/export, text/Markdown notes, and issue-report copying.
 - 22CV52 Units 1–5 and the supplied topic outline.
@@ -45,7 +45,7 @@ npm test
 
 ## Not implemented yet
 
-- No provider key is bundled. Model-backed chat works after configuring `AI_API_KEY` locally or in Render. Without it, the app uses curated offline responses.
+- Public cloud Ollama hosting, local-network HTTPS setup, authentication, and remote access to the user's computer are not included. Render-hosted chat cannot reach a model running on the user's PC.
 - Full section analysis, doubly reinforced/T-beams, loads, shear, deflection, crack control, development length, slab, column, footing, staircase, 2BHK design, or construction detailing.
 - PDF extraction, OCR, document indexing/RAG, table/equation extraction, or image interpretation. PDF/image selection only reports that the file was selected; its contents are not sent or analyzed. Text/Markdown uploads may be included in a prompt.
 - Licensed/verified Indian Standard documents, current-edition checks, clause/table/page citations, or a verified GATE question bank. The app explicitly flags these as unavailable.

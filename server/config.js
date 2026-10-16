@@ -16,12 +16,15 @@ export function loadLocalEnv(root) {
 }
 
 export function modelConfigured() {
-  return process.env.AI_PROVIDER === 'openai-compatible' && Boolean(process.env.AI_API_KEY && process.env.AI_MODEL && process.env.AI_BASE_URL);
+  const provider = process.env.AI_PROVIDER;
+  const credentialsReady = provider === 'ollama' || Boolean(process.env.AI_API_KEY);
+  return ['ollama', 'openai-compatible'].includes(provider) && credentialsReady && Boolean(process.env.AI_MODEL && process.env.AI_BASE_URL);
 }
 
 export function modelStatus() {
   if (!modelConfigured()) return { configured:false, aiConfigured:false };
-  const provider = /generativelanguage\.googleapis\.com/i.test(process.env.AI_BASE_URL) ? 'Gemini' : process.env.AI_PROVIDER;
+  const provider = process.env.AI_PROVIDER === 'ollama' ? 'Ollama'
+    : /generativelanguage\.googleapis\.com/i.test(process.env.AI_BASE_URL) ? 'Gemini' : process.env.AI_PROVIDER;
   return { configured:true, aiConfigured:true, provider, model:process.env.AI_MODEL };
 }
 
@@ -34,15 +37,18 @@ export async function answerWithModel({ text, mode, history }) {
     ...history.slice(-12).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '').slice(0, 6000) })),
     { role: 'user', content: String(text).slice(0, 12000) }
   ];
+  const headers = { 'content-type': 'application/json' };
+  if (process.env.AI_API_KEY) headers.authorization = `Bearer ${process.env.AI_API_KEY}`;
+  else if (process.env.AI_PROVIDER === 'openai-compatible') throw new Error('The configured provider requires an API key.');
   const response = await fetch(endpoint, {
     method: 'POST',
-    headers: { authorization: `Bearer ${process.env.AI_API_KEY}`, 'content-type': 'application/json' },
+    headers,
     body: JSON.stringify({ model: process.env.AI_MODEL, messages, temperature: 0.45, max_tokens: 1400 }),
     signal: AbortSignal.timeout(45000)
   });
   if (!response.ok) {
-    const hint = response.status === 429 ? 'The provider free-tier quota or rate limit was reached. Try again later.'
-      : response.status === 401 || response.status === 403 ? 'The provider rejected its API key. Check the server-side key.'
+    const hint = response.status === 429 ? 'The model server is rate limiting requests. Try again later.'
+      : response.status === 401 || response.status === 403 ? 'The model server rejected its credentials. Check the server configuration.'
       : `The provider returned HTTP ${response.status}. Check its model and endpoint configuration.`;
     throw new Error(hint);
   }
