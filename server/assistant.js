@@ -12,7 +12,10 @@ export function respond({ text, mode = 'beginner', context = [] }) {
       ? `Required tensile steel area Ast = ${result.Ast} mm². Neutral axis xu = ${result.xu} mm; limiting xu,max = ${result.xuMax} mm. Flexural check: ${result.flexurePass ? 'PASS' : 'FAIL'}.${modeNote}`
       : result.message };
   }
-  if (/beam|flexur|reinforcement|design/i.test(q)) return { kind: 'clarification', text: 'For the supported flexure calculation, provide all five values with units: b (mm), d (mm), fck (N/mm²), fy (N/mm²), and Mu (kN·m). Example: “Beam flexure b=300 d=500 fck=20 fy=415 Mu=120”. I will not assume missing loads or dimensions.' };
+  // Only reserve clarification for the implemented beam-flexure calculator.
+  // Broad terms such as "design" or "reinforcement" used to intercept unrelated
+  // RCC questions (including slabs) before the configured language model ran.
+  if (/\bbeam\b/i.test(q) && /\bflexur(?:e|al)\b|\bsteel area\b|\bAst\b/i.test(q)) return { kind: 'clarification', text: 'For the supported flexure calculation, provide all five values with units: b (mm), d (mm), fck (N/mm²), fy (N/mm²), and Mu (kN·m). Example: “Beam flexure b=300 d=500 fck=20 fy=415 Mu=120”. I will not assume missing loads or dimensions.' };
   if (/unit|syllabus|topic|course/i.test(q)) return { kind: 'syllabus', text: `22CV52 · Design of RCC Structures\n${syllabus.map(u => `Unit ${u.unit}: ${u.title}\n• ${u.topics.join('\n• ')}`).join('\n\n')}` };
   if (/gate/i.test(q)) return { kind: 'status', text: 'GATE mode is available for explanations and user-provided questions. No verified previous-year question bank is installed, so question years and provenance will not be invented.' };
   if (/code|is 456|clause|reference/i.test(q)) return { kind: 'reference', text: 'No Indian Standard source document has been supplied or verified in this workspace. Clause, table, equation, and page citations are therefore unavailable; reference verification is required.' };
