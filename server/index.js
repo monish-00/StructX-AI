@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { respond } from './assistant.js';
 import { syllabus } from './syllabus.js';
-import { answerWithModel, loadLocalEnv, modelConfigured } from './config.js';
+import { answerWithModel, loadLocalEnv, modelConfigured, modelStatus } from './config.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 loadLocalEnv(root);
 const dataDir = path.join(root, 'data');
@@ -17,7 +17,7 @@ const mime = { '.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const json = (status, obj) => { res.writeHead(status, {'content-type':'application/json; charset=utf-8'}); res.end(JSON.stringify(obj)); };
-  if (req.method === 'GET' && url.pathname === '/api/health') return json(200, { ok:true, app:'StructX AI', aiConfigured:modelConfigured(), hostedMode:process.env.HOSTED_MODE==='true', syllabusUnits:syllabus.length });
+  if (req.method === 'GET' && url.pathname === '/api/health') return json(200, { ok:true, app:'StructX AI', ...modelStatus(), hostedMode:process.env.HOSTED_MODE==='true', syllabusUnits:syllabus.length });
   if (req.method === 'GET' && url.pathname === '/api/syllabus') return json(200, syllabus);
   if (req.method === 'GET' && url.pathname === '/api/conversations') return json(200, process.env.HOSTED_MODE==='true' ? [] : db());
   if (req.method === 'DELETE' && url.pathname === '/api/conversations') { if(process.env.HOSTED_MODE==='true')return json(405,{error:'Hosted conversations are stored in this browser.'});save([]); return json(200, { ok:true }); }
@@ -28,7 +28,9 @@ const server = http.createServer(async (req, res) => {
       if(process.env.HOSTED_MODE==='true'){
         const history=Array.isArray(input.history)?input.history.slice(-12):[];
         let answer=respond({text:input.text,mode:input.mode,context:history});
-        try{if(answer.kind==='guidance'&&modelConfigured())answer=await answerWithModel({text:input.text,mode:input.mode,history});}
+        // Keep verified numeric calculations and their required-input prompts deterministic;
+        // use the model for every other chat turn so common topics do not get canned replies.
+        try{if(modelConfigured()&&!['calculation','clarification'].includes(answer.kind))answer=await answerWithModel({text:input.text,mode:input.mode,history});}
         catch(error){answer={kind:'provider-error',text:`I could not get an answer from the configured AI provider. ${error.name==='TimeoutError'?'The request timed out.':error.message} Check the server configuration and try again. No answer was fabricated.`};}
         return json(200,{answer});
       }
@@ -38,7 +40,7 @@ const server = http.createServer(async (req, res) => {
       let answer;
       try {
         answer = respond({text:input.text,mode:input.mode,context:convo.messages});
-        if (answer.kind === 'guidance' && modelConfigured()) {
+        if (modelConfigured() && !['calculation','clarification'].includes(answer.kind)) {
           const history = convo.messages.slice(0, -1);
           answer = await answerWithModel({ text:input.text, mode:input.mode, history });
         }

@@ -1,6 +1,6 @@
 # StructX AI
 
-StructX AI is a local-first RCC learning workspace based on the supplied 22CV52 syllabus. It has curated offline answers for common RCC concepts, a deterministic beam flexure calculation, and an optional server-side OpenAI-compatible chat-completions adapter for broader questions.
+StructX AI is a mobile-installable RCC learning assistant based on the supplied 22CV52 syllabus. With its server-side Gemini connection configured, it uses conversation context to answer general questions; its supported beam flexure calculation remains deterministic. A curated offline response set remains available when no model key is configured.
 
 ## Run locally
 
@@ -18,11 +18,11 @@ StructX AI is an installable Progressive Web App (PWA); it uses no paid app fram
 
 ### Enable model-backed answers
 
-The app does not include an AI key. Copy `.env.example` to `.env` and set `AI_API_KEY`, `AI_MODEL`, and `AI_BASE_URL` to values from your chosen OpenAI-compatible provider. `AI_BASE_URL` is the provider API root (for example `https://api.openai.com/v1`); the server appends `/chat/completions`. Restart the server after changing `.env`. The key stays in the Node backend and is never sent to browser JavaScript. The provider must allow network access from this machine. Without these settings the app uses its limited offline answer set and explains that general model chat is unavailable.
+The app is wired to Google's OpenAI-compatible Gemini API. To run model-backed chat locally, copy `.env.example` to `.env`, create a key in [Google AI Studio](https://aistudio.google.com/app/apikey), set `AI_API_KEY`, then restart the server. The default model is `gemini-3.8-flash`; the URL and model can be changed in `.env`. Keep the key on the server: it is never sent to browser JavaScript and must not be committed. Google's Gemini API lists a free tier for Gemini 3.8 Flash, with quotas and availability subject to Google's account and rate limits. Free-tier prompts may be used to improve Google's products. The chatbot does not use search grounding, so it does not provide live web research or verified code citations. The deterministic local beam calculation is not replaced by model-generated arithmetic.
 
 ## Render deployment
 
-`render.yaml` defines a free Singapore web service with a health check. Render's free service sleeps after inactivity, and it does not preserve server files. In `HOSTED_MODE`, the API is stateless and each visitor's conversation history stays in that visitor's browser `localStorage`; history does not sync across devices. No AI provider key is configured by the blueprint, so the hosted version does not expose a billable unauthenticated model proxy. To deploy, push this project to a Git repository, connect that repository in Render, and create a Blueprint from `render.yaml`. This project does not currently have a Git remote or hosting account connection.
+`render.yaml` defines a free Singapore web service with Gemini configuration and an unset secret key. During initial Blueprint creation, Render asks for `AI_API_KEY`; for an already-created service, add that variable in its Environment settings. Never put the secret in the Blueprint YAML or GitHub. The app uses Gemini 3.8 Flash's free tier (quota limits apply); no paid-tier model or search-grounding feature is enabled. Render's free service sleeps after inactivity and does not preserve server files. In `HOSTED_MODE`, each visitor's conversation history stays in that visitor's browser `localStorage` and does not sync across devices. The public hosted chat uses the server-side key, so keep that key on the free-tier project and rotate/remove it if abused.
 
 Run the automated checks with:
 
@@ -34,7 +34,7 @@ npm test
 
 - Responsive light/dark interface with home, chat, syllabus, GATE status, formula library, topic focus, and settings views.
 - Installable PWA manifest, custom app icon, service worker shell cache, offline page fallback, and an install prompt/help control.
-- Optional server-side OpenAI-compatible chat-completions adapter with prior conversation context, bounded message sizes, request timeout, and honest provider error handling.
+- Server-side Gemini 3.8 Flash chat with prior conversation context; when configured, the model handles ordinary chat rather than returning repetitive canned topics. The supported beam flexure calculator and its missing-input prompts stay deterministic.
 - Curated offline explanations for several core RCC concepts.
 - Conversation creation, local persistence, history search, saved status display, clear history, selectable response mode, copy/export, text/Markdown notes, and issue-report copying.
 - 22CV52 Units 1–5 and the supplied topic outline.
@@ -45,7 +45,7 @@ npm test
 
 ## Not implemented yet
 
-- No provider key is bundled. Model-backed general conversation works only after configuring a compatible provider in local `.env`.
+- No provider key is bundled. Model-backed chat works after configuring `AI_API_KEY` locally or in Render. Without it, the app uses curated offline responses.
 - Full section analysis, doubly reinforced/T-beams, loads, shear, deflection, crack control, development length, slab, column, footing, staircase, 2BHK design, or construction detailing.
 - PDF extraction, OCR, document indexing/RAG, table/equation extraction, or image interpretation. PDF/image selection only reports that the file was selected; its contents are not sent or analyzed. Text/Markdown uploads may be included in a prompt.
 - Licensed/verified Indian Standard documents, current-edition checks, clause/table/page citations, or a verified GATE question bank. The app explicitly flags these as unavailable.
